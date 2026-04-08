@@ -1,0 +1,12 @@
+.vscode/
+*.exe
+*.o
+*.obj
+*.dll
+*.so
+*.dylib
+*.log
+*.tmp
+build/
+dist/
+out/

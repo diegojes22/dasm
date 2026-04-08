@@ -1,11 +1,15 @@
 #include "inputArgs.hpp"
-#include "argsConf.cpp"
 
-std::string getFlagValue(int argc, char* argv[], std::string arg)
+InputArgs::InputArgs(int argc, char* argv[]) {
+    this->argc = argc;
+    this->argv.assign(argv, argv + argc);
+}
+
+std::string InputArgs::getFlagValue(std::string arg)
 {
     for (int i = 1; i < argc-1; i++) 
     {
-        if(arg == argv[i])
+        if(argv.at(i) == arg)
         {
             return argv[i + 1];
         }
@@ -14,7 +18,7 @@ std::string getFlagValue(int argc, char* argv[], std::string arg)
     return NO_ARG;
 }
 
-bool flagExists(int argc, char* argv[], std::string arg)
+bool InputArgs::flagExists(std::string arg)
 {
     for (int i = 1; i < argc; i++)
     {
@@ -25,4 +29,9 @@ bool flagExists(int argc, char* argv[], std::string arg)
     }
 
     return false;
+}
+
+bool InputArgs::checkArgsLen()
+{
+    return argc > 1;
 }
