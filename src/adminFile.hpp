@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <dirent.h>
 
 #ifndef ADMINFILE_HPP
 #define ADMINFILE_HPP
@@ -16,6 +17,9 @@ public:
 
     bool isOpen();
     void write(std::string txt);
+
+    bool loadTemplate(std::string template_name, std::string& template_content);
+    std::string getTemplateList();
 };
 
 #endif /* ADMINFILE_HPP */

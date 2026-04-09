@@ -8,6 +8,7 @@ AdminFile::AdminFile(std::string filepath)
 {
     this->filepath = filepath;
     this->file.open(filepath);
+    std::cout << "Archivo abierto: " << filepath << "\n";
 } 
 
 AdminFile::~AdminFile()
@@ -29,4 +30,51 @@ void AdminFile::write(std::string txt)
     {
         this->file << txt;
     }
+}
+
+
+bool AdminFile::loadTemplate(std::string template_name, std::string& template_content)
+{
+    std::string template_path = "F:\\Code Projects\\ASM Transpiler\\src\\templates\\" + template_name;
+    std::cout << "Cargando plantilla: " << template_path << "\n";
+    std::ifstream template_file(template_path);
+
+    if(!template_file.is_open())
+    {
+        return false;
+    }
+
+    std::string line;
+    template_content = "";
+
+    while(std::getline(template_file, line))
+    {
+        template_content += line + "\n";
+    }
+
+    return true;
+}
+
+std::string AdminFile::getTemplateList()
+{
+    // Abrir el directorio de plantillas y listar los archivos disponibles
+    DIR* dir = opendir("F:\\Code Projects\\ASM Transpiler\\src\\templates\\");
+    if(dir == nullptr) {
+        std::cerr << "Error: No se pudo abrir el directorio de plantillas.\n";
+        return "";
+    }
+
+    std::string template_list = "Plantillas disponibles:\n";
+
+    struct dirent* input;
+
+    while ((input = readdir(dir)) != nullptr) {
+        std::string filename = input->d_name;
+        if (filename != "." && filename != "..") {
+            template_list += " - " + filename + "\n";
+        }
+    }
+    
+    closedir(dir);
+    return template_list;
 }

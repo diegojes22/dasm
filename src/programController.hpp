@@ -25,10 +25,10 @@ public:
 
     // Funciones de los argumentos
     void fileHandlerFn();
+    void checkTemplateFn();
+    void addComentsFn();
     void addHeaderFn();
     void addEndProcFn();
-
-    void checkFlags();
 
     // otros metodos
     void end_proc(int code);
