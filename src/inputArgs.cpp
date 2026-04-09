@@ -11,6 +11,10 @@ std::string InputArgs::getArgValue(std::string arg)
     {
         if(argv.at(i) == arg)
         {
+            if(argv.at(i + 1).rfind("--", 0) == 0) // Si el siguiente argumento es otro flag, entonces el valor del argumento actual es NO_ARG
+            {
+                return NO_ARG;
+            }
             return argv[i + 1];
         }
     }
