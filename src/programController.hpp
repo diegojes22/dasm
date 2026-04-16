@@ -1,11 +1,12 @@
 #include "inputArgs.hpp"
 #include "adminFile.hpp"
 #include "asmControll.hpp"
+#include "about.hpp"
 
 #ifndef PROGRAMCONTROLLER_HPP
 #define PROGRAMCONTROLLER_HPP
 
-#define VERSION "0.0.1 ALPHA"
+#define VERSION "0.1.3 ALPHA"
 
 /**
  * Control y manejo general del comando
@@ -42,7 +43,11 @@ public:
     void checkTemplateFn();
     void addComentsFn();
     void addHeaderFn();
+    void addVariablesFn();
+    void addMainTasmFn();
+    void initDSFn();
     void addEndProcFn();
+    void loadAboutFn();
 
     //
     // otros metodos

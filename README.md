@@ -116,6 +116,10 @@ Define constantes y plantillas:
 
 ## Compilación y Ejecución
 
+> Para que la compilacion funcione debes tener instalado g++ (GCC) y PowerShell en tu sistema Windows. Asegúrate de tenerlos configurados correctamente en tu PATH.
+> 
+> Ademas, dentro del directorio del proyecto crea una carpeta llamada `out` para almacenar el ejecutable generado.
+
 ### Compilar el proyecto
 
 **Opción 1 (Automática con PowerShell):**

@@ -61,14 +61,17 @@ void ProgramController::initArgs()
      */
     this->inputArgsHandler->addFlag("--help", "Despliega el menu de ayuda el cual describe cada argumento y el uso correcto del comando");
     this->inputArgsHandler->addFlag("--version", "Muestra informacion adicional del programa");
+    this->inputArgsHandler->addFlag("--about", "?");
     this->inputArgsHandler->addArg("--template", "Selecciona la plantilla a usar para generar el archivo de salida. --template [list] | <template_name.asm>");
 
     // Esta flag es requerida si o si ya que es la que le indica al programa donde esta el archivo de entrada con la plantilla a transpilar.
-    this->inputArgsHandler->addArg("--file", "*Archivo de entrada donde se declarar la plantilla (required). --file <file_output>");
+    this->inputArgsHandler->addArg("file", "*Archivo de entrada donde se declarar la plantilla (required). file <file_output>");
     // Parametros opcionales para armar el archivo de salida, si no se proporcionan se usaran los valores por defecto.
-    this->inputArgsHandler->addArg("--header", "Codigo de encabezado a agregar al inicio del archivo de salida (default: vacio). --header <default | smallheader>");
+    this->inputArgsHandler->addArg("--header", "Codigo de encabezado a agregar al inicio del archivo de salida (default: vacio). --header <default | smallstack>");
     this->inputArgsHandler->addFlag("--endproc", "*Codigo de ensamblador a agregar al final del archivo de salida (default: codigo para terminar el programa)");
     this->inputArgsHandler->addFlag("--exclude-comments", "Excluye los comentarios de la plantilla en el archivo de salida");
+    this->inputArgsHandler->addArg("--add-variables", "Agrega variables predefinidas al archivo de salida (default: no se agregan variables). --add-variables <default | [custom]>");
+    this->inputArgsHandler->addFlag("--init-ds", "Agrega el segmento de codigo para inicializar el segmento de datos al archivo de salida");
 
     this->inputArgsHandler->update();
 }
@@ -91,6 +94,13 @@ void ProgramController::checkBasicFlags()
     if(this->inputArgsHandler->getFlag("--version"))
     {
         std::cout << VERSION << "\n";
+        this->end_proc(0);
+    }
+    // Invocar funcion para mostrar la animacion de about
+    if(this->inputArgsHandler->getFlag("--about"))
+    {
+        about about_obj;
+        about_obj.invoqueAnimation();
         this->end_proc(0);
     }
 }
@@ -118,14 +128,14 @@ void ProgramController::checkArgs()
 ///
 
 /**
- * Verifica que el argumento --file sea ingresado, ademas de que se encarga
+ * Verifica que el argumento file sea ingresado, ademas de que se encarga
  * de abrir el archivo ingresado para comenzar a trabajar con el.
  * Esta funcion es de una prioridad alta, por lo que en el metodo run estara
  * muy arriba.
  */
 void ProgramController::fileHandlerFn()
 {
-    std::string filepath = this->inputArgsHandler->getArg("--file");
+    std::string filepath = this->inputArgsHandler->getArg("file");
     if(filepath == NO_ARG)
     {
         std::cerr << "Error: No se proporciono un archivo de entrada. Use --help para mas informacion." << std::endl;
@@ -215,6 +225,49 @@ void ProgramController::addComentsFn()
     }
 }
 
+void ProgramController::addVariablesFn()
+{
+    std::string add_variables = this->inputArgsHandler->getArg("--add-variables");
+    if(add_variables == NO_ARG)
+    {
+        return;
+    }
+    else if(add_variables == "default")
+    {
+        this->adminFileHandler->write("\tdb text \"Hello, World!\" 0Dh,0Ah \n");
+    }
+    else
+    {
+        this->adminFileHandler->write("\t; Variables personalizadas\n");
+        this->adminFileHandler->write("\tdb "+add_variables+" 48 \n");
+    }
+
+}
+
+void ProgramController::addMainTasmFn()
+{
+    this->adminFileHandler->write(MAIN_TASM_HEADER);
+}
+
+void ProgramController::initDSFn()
+{
+    if(this->inputArgsHandler->getFlag("--init-ds"))
+    {
+        this->adminFileHandler->write(INIT_DS_TASM);
+    }
+}
+
+void ProgramController::loadAboutFn()
+{
+    std::string about_arg = this->inputArgsHandler->getArg("--about");
+    if(about_arg != NO_ARG)
+    {
+        about about_obj;
+        about_obj.invoqueAnimation();
+        this->end_proc(0);
+    }
+}
+
 ///
 /// Otras funciones
 ///
@@ -260,6 +313,10 @@ void ProgramController::run()
 
     this->fileHandlerFn();
     this->checkTemplateFn();
+    this->addComentsFn();
     this->addHeaderFn();
+    this->addVariablesFn();
+    this->addMainTasmFn();
+    this->initDSFn();
     this->addEndProcFn();
 }
