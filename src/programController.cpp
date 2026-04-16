@@ -1,12 +1,30 @@
 #include "programController.hpp"
 
-// Contructor y destructor
+
+///
+/// Constructor y destructor
+///
+
+/**
+ * Constructor de la clase. Se recomienda crear la clase dentro de la funcion main
+ * para inicializar los parametros.
+ * @brief
+ * 
+ * El constructor recibe como entrada los argumentos de la terminal, argumentos que
+ * se reciven en la funcion main de C/C++.
+ * @param argc entero que cuenta el numero de parametros
+ * @param argv arreglo de cadenas con los parametros introducidos de la terminal
+ */
 ProgramController::ProgramController(int argc, char* argv[])
 {
     this->inputArgsHandler = new InputArgs(argc, argv);
     this->adminFileHandler = nullptr;
 }
 
+/**
+ * Destructor: Solo libera la memoria reservada cuando la
+ * clase es eliminada.
+ */
 ProgramController::~ProgramController()
 {
     if(this->inputArgsHandler != nullptr)
@@ -19,34 +37,57 @@ ProgramController::~ProgramController()
     }
 }
 
-// Inicializadores basicos
+///
+/// Inicializadores basicos
+///
 /**
- * Inicializa los argumentos y flags que el programa acepta, junto con sus descripciones para el menu de ayuda.
+ * Inicializa los argumentos y flags que el programa acepta, junto con sus descripciones 
+ * para el menu de ayuda.
  */
 void ProgramController::initArgs()
 {
-    // Estas Flags de aqui son basicas, siempre se agregan al programa, sin importar los argumentos que se le pasen.
+    /*
+     USO:
+        Dentro de esta funcion define los argumentos que el programa recibira desde la terminal.
+        A la hora de definir sun argumento debes declarar de que tipo, el nombre del argumento,
+        y una descripcion del mismo. Todo esto tambien ayudara cuando se desee desplegar el menu
+        de ayuda.
+    */
+    
+    /* 
+      Las flags que estan aqui son de un unico uso, es decir, si se llaman solo se realiza esa tarea y el programa cierra.
+      Ejemplo de lo anterior son los parametros --help o --version (estos dos parametros son llamados checkBasicFlags y se
+      mandan llamar en la funcion con el mismo nombre).
+     */
     this->inputArgsHandler->addFlag("--help", "Despliega el menu de ayuda el cual describe cada argumento y el uso correcto del comando");
     this->inputArgsHandler->addFlag("--version", "Muestra informacion adicional del programa");
-    this->inputArgsHandler->addArg("--template", "Selecciona la plantilla a usar para generar el archivo de salida");
+    this->inputArgsHandler->addArg("--template", "Selecciona la plantilla a usar para generar el archivo de salida. --template [list] | <template_name.asm>");
+
     // Esta flag es requerida si o si ya que es la que le indica al programa donde esta el archivo de entrada con la plantilla a transpilar.
-    this->inputArgsHandler->addArg("--file", "*Archivo de entrada donde se declarar la plantilla (required)");
+    this->inputArgsHandler->addArg("--file", "*Archivo de entrada donde se declarar la plantilla (required). --file <file_output>");
     // Parametros opcionales para armar el archivo de salida, si no se proporcionan se usaran los valores por defecto.
-    this->inputArgsHandler->addArg("--header", "Codigo de encabezado a agregar al inicio del archivo de salida (default: vacio)");
+    this->inputArgsHandler->addArg("--header", "Codigo de encabezado a agregar al inicio del archivo de salida (default: vacio). --header <default | smallheader>");
     this->inputArgsHandler->addFlag("--endproc", "*Codigo de ensamblador a agregar al final del archivo de salida (default: codigo para terminar el programa)");
     this->inputArgsHandler->addFlag("--exclude-comments", "Excluye los comentarios de la plantilla en el archivo de salida");
 
     this->inputArgsHandler->update();
 }
 
+/**
+ * En esta funcion comprobamos si se ingresaron las Basic Flags, es decir,
+ * si el usuario ingreso algo como --help o --version, solo ejecutaremos 
+ * la funcion correspondiente y el programa terminara.
+ */
 void ProgramController::checkBasicFlags()
 {
+    // Invocar la funcion para la ayuda
     if(this->inputArgsHandler->getFlag("--help"))
     {
         std::cout << "dasm\n";
         this->inputArgsHandler->printHelpOptions();
         this->end_proc(0);
     }
+    // Invocar funcion para mostrar la version
     if(this->inputArgsHandler->getFlag("--version"))
     {
         std::cout << VERSION << "\n";
@@ -54,6 +95,11 @@ void ProgramController::checkBasicFlags()
     }
 }
 
+/**
+ * Esta funcion solo verifica que se haya ingresado al menos un argumento,
+ * de lo contrario, si la funcion no detecta lo anterior causara que el programa
+ * finalice con error.
+ */
 void ProgramController::checkArgs()
 {
     if(!this->inputArgsHandler->checkArgsLen())
@@ -63,7 +109,20 @@ void ProgramController::checkArgs()
     }
 }
 
-// Funciones de los argumentos
+///
+/// FUNCIONES PROPIAS
+/// En la siguiente seccion de codigo define tus funciones de acuerdo con los
+/// argumentos declarardos en la funcion `initArgs()`.
+/// Estas funciones deben declararse dentro de la clase en el archivo `programController.hpp`
+/// y se recomienda escribirlas en el orden de como fueron declaradas en el archivo ya mencionado.
+///
+
+/**
+ * Verifica que el argumento --file sea ingresado, ademas de que se encarga
+ * de abrir el archivo ingresado para comenzar a trabajar con el.
+ * Esta funcion es de una prioridad alta, por lo que en el metodo run estara
+ * muy arriba.
+ */
 void ProgramController::fileHandlerFn()
 {
     std::string filepath = this->inputArgsHandler->getArg("--file");
@@ -82,6 +141,12 @@ void ProgramController::fileHandlerFn()
     }
 }
 
+/**
+ * Argumento para agregar un header u otro en el archivo seleccionado.
+ * Los valores en cuestion son:
+ *  - smalstack: pila de 0050h
+ *  - <default>: si no hay valor o este no coincide, se agrega una pila de 0100h
+ */
 void ProgramController::addHeaderFn()
 {
     std::string header_type = this->inputArgsHandler->getArg("--header");
@@ -96,6 +161,9 @@ void ProgramController::addHeaderFn()
     }
 }
 
+/**
+ * Argumento para agregar el codigo de salida de TASM al final del archivo.
+ */
 void ProgramController::addEndProcFn()
 {
     if(this->inputArgsHandler->getFlag("--endproc"))
@@ -105,6 +173,10 @@ void ProgramController::addEndProcFn()
     }
 }
 
+/**
+ * Se encraga de gestionar las plantillas ya existentes para cargarlas
+ * en el archivo de salida.
+ */
 void ProgramController::checkTemplateFn()
 {
     std::string template_name = this->inputArgsHandler->getArg("--template");
@@ -130,6 +202,11 @@ void ProgramController::checkTemplateFn()
     end_proc(0);
 }
 
+/**
+ * Funcion para verificar el argumento --exclude-comments.
+ * El archivo generado por defecto tiene comentarios en el inicio los cuales
+ * corresponden a los creditos del autor (yo), pero se pueden desactivar con este argumento. 
+ */
 void ProgramController::addComentsFn()
 {
     if(!this->inputArgsHandler->getFlag("--exclude-comments"))
@@ -138,7 +215,13 @@ void ProgramController::addComentsFn()
     }
 }
 
-// otros metodos
+///
+/// Otras funciones
+///
+/**
+ * Esta funcion se usa principalmente en flags basicas o de un solo uso para
+ * terminar el programa sin necesidad del return en la funcion main.
+ */
 void ProgramController::end_proc(int code)
 {
     if(code == 0)
@@ -162,10 +245,15 @@ void ProgramController::end_proc(int code)
     exit(code);
 }
 
+/** 
+ * Funcion de ejecucion.
+ * 
+ * Dentro de esta funcio manda llamar tus funciones definidas de acuerdo a los parametros declarados.
+ * Es muy importante mantener una prioridad debido a la ejecucion secuencial de las mismas.
+ * Mientras mas arriba este una funcion, mas prioridad tendra, Tenlo en cuenta!.
+ */
 void ProgramController::run()
 {
-    std::cout << "Iniciando ejecucion del programa...\n";
-
     this->initArgs();
     this->checkBasicFlags();
     this->checkArgs();

@@ -5,9 +5,7 @@
 // My headers
 #include "programController.hpp"
 
-using namespace std;
-
-
+/*-- Main -- */
 int main(int argc, char* argv[]) 
 {
     ProgramController* app = new ProgramController(argc, argv);

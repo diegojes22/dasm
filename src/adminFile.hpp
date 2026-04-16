@@ -5,6 +5,13 @@
 #ifndef ADMINFILE_HPP
 #define ADMINFILE_HPP
 
+// Define este difectorio como una constante para que sea fácil de cambiar si es necesario.
+// Aun no encuentro una forma de hacerlo dinámico, pero esto es suficiente por ahora
+#define TEMPLATES_DIR "D:\\CodeProjects\\dasm\\src\\templates"
+
+/** @brief 
+ * Clase para administrar archivos 
+ */
 class AdminFile 
 {
 private:

@@ -1,5 +1,8 @@
 #include "adminFile.hpp"
 
+///
+/// CONSTRUCTOR Y DESTRUCTOR
+///
 /**
  * Constructor.
  * @param filepath Ruta del archivo a crear o abrir.
@@ -11,6 +14,7 @@ AdminFile::AdminFile(std::string filepath)
     std::cout << "Archivo abierto: " << filepath << "\n";
 } 
 
+/** Destructor de la clase: solo cierra archivos o stream abiertos */
 AdminFile::~AdminFile()
 {
     if(this->file.is_open())
@@ -35,7 +39,7 @@ void AdminFile::write(std::string txt)
 
 bool AdminFile::loadTemplate(std::string template_name, std::string& template_content)
 {
-    std::string template_path = "F:\\Code Projects\\ASM Transpiler\\src\\templates\\" + template_name;
+    std::string template_path = TEMPLATES_DIR "/" + template_name;
     std::cout << "Cargando plantilla: " << template_path << "\n";
     std::ifstream template_file(template_path);
 
@@ -58,7 +62,7 @@ bool AdminFile::loadTemplate(std::string template_name, std::string& template_co
 std::string AdminFile::getTemplateList()
 {
     // Abrir el directorio de plantillas y listar los archivos disponibles
-    DIR* dir = opendir("F:\\Code Projects\\ASM Transpiler\\src\\templates\\");
+    DIR* dir = opendir(TEMPLATES_DIR);
     if(dir == nullptr) {
         std::cerr << "Error: No se pudo abrir el directorio de plantillas.\n";
         return "";
