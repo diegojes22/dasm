@@ -9,6 +9,7 @@ class about
 {
 public:
     void invoqueAnimation();
+    void showAboutInfo();
 };
 
 #endif

@@ -101,6 +101,7 @@ void ProgramController::checkBasicFlags()
     {
         about about_obj;
         about_obj.invoqueAnimation();
+        about_obj.showAboutInfo();
         this->end_proc(0);
     }
 }
@@ -257,16 +258,6 @@ void ProgramController::initDSFn()
     }
 }
 
-void ProgramController::loadAboutFn()
-{
-    std::string about_arg = this->inputArgsHandler->getArg("--about");
-    if(about_arg != NO_ARG)
-    {
-        about about_obj;
-        about_obj.invoqueAnimation();
-        this->end_proc(0);
-    }
-}
 
 ///
 /// Otras funciones

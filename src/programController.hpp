@@ -47,7 +47,6 @@ public:
     void addMainTasmFn();
     void initDSFn();
     void addEndProcFn();
-    void loadAboutFn();
 
     //
     // otros metodos
