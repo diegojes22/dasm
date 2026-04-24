@@ -1,14 +1,8 @@
 import { Command } from "commander";
 import { logo } from "./utils";
+import chalk from "chalk";
 
-const hi = require("./commands/hi");
+import { ProgramController } from "./programController";
 
-const program = new Command();
-
-program
-    .name(logo)
-;
-
-hi.load(program);
-
-program.parse(process.argv);
+const root = new ProgramController(process.argv);
+root.parser();

@@ -1,10 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const commander_1 = require("commander");
-const utils_1 = require("./utils");
-const hi = require("./commands/hi");
-const program = new commander_1.Command();
-program
-    .name(utils_1.logo);
-hi.load(program);
-program.parse(process.argv);
+const programController_1 = require("./programController");
+const root = new programController_1.ProgramController(process.argv);
+root.parser();
